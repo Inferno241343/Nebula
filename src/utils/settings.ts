@@ -1,7 +1,7 @@
 import { defaultStore } from "./storage";
 import { SettingsVals, WispServers } from "./values";
 import { Marketplace } from "./marketplace";
-import { setTransport, SW } from "./serviceWorker";
+import { SW } from "./serviceWorker";
 
 const tab = {
     ab: (redirect: string) => {
@@ -81,9 +81,6 @@ const tab = {
 }
 
 const proxy = {
-    change: (proxy: "uv" | "sj" | "automatic") => {
-        defaultStore.setVal(SettingsVals.proxy.proxy.key, proxy);
-    },
     searchEngine: (s: string) => {
         defaultStore.setVal(SettingsVals.proxy.searchEngine, s);
     },
@@ -91,18 +88,14 @@ const proxy = {
         defaultStore.setVal(SettingsVals.proxy.wispServer, s);
     },
     transport: async (t: "libcurl" | "epoxy") => {
-        const sw = SW.getInstances().next().value!;
-        const { bareMuxConn } = await sw.getSWInfo();
-        await setTransport(bareMuxConn, t as "libcurl" | "epoxy");
         defaultStore.setVal(SettingsVals.proxy.transport.key, t);
     }
 }
 
 async function* initDefaults() {
-    yield proxy.change(defaultStore.getVal(SettingsVals.proxy.proxy.key) ? defaultStore.getVal(SettingsVals.proxy.proxy.key) as "uv" | "sj" | "automatic" : "automatic");
+    yield proxy.searchEngine(defaultStore.getVal(SettingsVals.proxy.searchEngine) ? defaultStore.getVal(SettingsVals.proxy.searchEngine) : "ddg");
     yield proxy.wisp(defaultStore.getVal(SettingsVals.proxy.wispServer) ? defaultStore.getVal(SettingsVals.proxy.wispServer) : "default");
     yield proxy.transport(defaultStore.getVal(SettingsVals.proxy.transport.key) ? defaultStore.getVal(SettingsVals.proxy.transport.key) as "libcurl" | "epoxy" : "libcurl");
-    yield proxy.searchEngine(defaultStore.getVal(SettingsVals.proxy.searchEngine) ? defaultStore.getVal(SettingsVals.proxy.searchEngine) : "ddg");
 }
 
 const Settings = {

@@ -1,10 +1,15 @@
 <script>
     import { EventHandler } from "@utils/events";
-    import { SW, createProxyScripts, checkProxyScripts, createBareMuxConn, setTransport } from "@utils/serviceWorker";
+    import { SW, createProxyScripts, checkProxyScripts } from "@utils/serviceWorker";
+    import { defaultStore } from "@utils/storage";
     import { Settings } from "@utils/settings";
+    import { SettingsVals, WispServers } from "@utils/values";
     import { log } from "@utils/index";
     import { Marketplace } from "@utils/marketplace";
-    import { SettingsVals } from "@utils/values";
+    import { BareCompatibleClient, type ProxyTransport } from "@mercuryworkshop/proxy-transports";
+    import LibcurlClient from "@mercuryworkshop/libcurl-transport";
+    import EpoxyClient from "@mercuryworkshop/epoxy-transport";
+import type { ProcessedCreateParams } from "astro:schema";
     const titleText = ` 
      _   _      _           _         ____                  _               
     | \\ | | ___| |__  _   _| | __ _  / ___|  ___ _ ____   _(_) ___ ___  ___ 
@@ -20,14 +25,45 @@
         log({ type: 'normal', bg: true, prefix: false }, sysInfo);
         log({ type: 'info', bg: true, prefix: true }, "General init...");
         for (const script of createProxyScripts()) {
+            let { promise, resolve, reject } = Promise.withResolvers();
+            console.log(promise)
+            script.addEventListener('load', () => {
+                console.log(script.src)
+                resolve(script.src);
+            });
+            script.addEventListener('error', () => {
+                reject();
+            });
             document.body.appendChild(script);
+            await promise;
         }
         await checkProxyScripts();
-        const conn = await createBareMuxConn("/baremux/worker.js");
-        const sw = new SW(conn);
+        const sw = new SW();
         const mp = new Marketplace();
-        const { serviceWorker, bareMuxConn, sj } = await sw.getSWInfo();
-        log({ type: 'info', bg: true, prefix: true }, `General init completed! \n\nServiceWorker: ${serviceWorker.active?.state} \nBareMuxConn: ${bareMuxConn ? 'Active': 'Not active'} \nScramjetController: ${sj ? 'Active' : 'Not active'}`);
+        const { serviceWorker } = await sw.getSWInfo();
+        const server = defaultStore.getVal(SettingsVals.proxy.wispServer);
+        const transportType = defaultStore.getVal(SettingsVals.proxy.transport.key);
+        let transport: ProxyTransport;
+        switch (transportType) {
+            case 'epoxy':
+                transport = new EpoxyClient({ wisp: server ? WispServers[server] : WispServers.default });
+                break;
+            case 'libcurl':
+            default:
+                transport = new LibcurlClient({ wisp: server ? WispServers[server] : WispServers.default });
+                break;
+        }
+        window.client = new BareCompatibleClient(transport);
+        window.controller = new $scramjetController.Controller({
+          serviceworker: serviceWorker.active!,
+          transport: transport,
+          config: {
+            scramjetPath: "/scram/scramjet.js",
+            injectPath: "/scram-controller/controller.inject.js",
+            wasmPath: "/scram/scramjet.wasm",
+          }
+        });
+        log({ type: 'info', bg: true, prefix: true }, `General init completed! \n\nServiceWorker: ${serviceWorker.active?.state}`);
         return mp;
     }
     

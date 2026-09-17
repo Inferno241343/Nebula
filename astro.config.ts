@@ -2,18 +2,13 @@ import { fileURLToPath } from "node:url";
 import node from "@astrojs/node";
 import svelte from "@astrojs/svelte";
 import tailwind from "@astrojs/tailwind";
-import { baremuxPath } from "@mercuryworkshop/bare-mux/node";
-import { epoxyPath } from "@mercuryworkshop/epoxy-transport";
-import { libcurlPath } from "@mercuryworkshop/libcurl-transport";
 import playformCompress from "@playform/compress";
-import { uvPath } from "@titaniumnetwork-dev/ultraviolet";
 import { scramjetPath } from "@mercuryworkshop/scramjet/path";
 import icon from "astro-icon";
 import { defineConfig, envField } from "astro/config";
 import { viteStaticCopy } from "vite-plugin-static-copy";
 import { version } from "./package.json";
 import { parsedDoc } from "./server/config.js";
-const workerwarePath = fileURLToPath(new URL("./workerware/src", import.meta.url));
 
 export default defineConfig({
     site: parsedDoc.seo.enabled ? parsedDoc.seo.domain || process.env.SITE : 'http://localhost:4321',
@@ -64,36 +59,16 @@ export default defineConfig({
     vite: {
         plugins: [
             viteStaticCopy({
-                targets: [
-                    {
-                        src: `${uvPath}/**/*`.replace(/\\/g, "/"),
-                        dest: "uv",
-                        overwrite: false
-                    },
-                    {
-                        src: `${epoxyPath}/**/*`.replace(/\\/g, "/"),
-                        dest: "epoxy",
-                        overwrite: false
-                    },
-                    {
-                        src: `${libcurlPath}/**/*`.replace(/\\/g, "/"),
-                        dest: "libcurl",
-                        overwrite: false
-                    },
+              targets: [
                     {
                         src: `${scramjetPath}/**/*`.replace(/\\/g, "/"),
                         dest: "scram",
                         overwrite: false 
                     },
                     {
-                        src: `${baremuxPath}/**/*`.replace(/\\/g, "/"),
-                        dest: "baremux",
-                        overwrite: false
-                    },
-                    {
-                        src: `${workerwarePath}/**/*`.replace(/\\/g, "/"),
-                        dest: "workerware",
-                        overwrite: false
+                        src: `node_modules/@mercuryworkshop/scramjet-controller/dist/*`,
+                        dest: "scram-controller",
+                        overwrite: false 
                     }
                 ]
             })

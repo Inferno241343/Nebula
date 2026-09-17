@@ -54,20 +54,19 @@ function getCurrentYear() {
   </div>
 </Layout>
 <script>
-    import { EventHandler } from "@utils/events";
-    import { SupportedSites, SearchEngines, SettingsVals } from "@utils/values";
-    import { search, Elements } from "@utils/index";
-    import { BareClient } from "@mercuryworkshop/bare-mux";
-    import { defaultStore } from "@utils/storage";
     import { SW } from "@utils/serviceWorker";
+    import { EventHandler } from "@utils/events";
+    import { SearchEngines, SettingsVals } from "@utils/values";
+    import { search, Elements } from "@utils/index";
+    import { defaultStore } from "@utils/storage";
     import { Marketplace } from "@utils/marketplace";
-
+    
+    console.log("ee")
     type Suggestion = {
         phrase: string;
     };
 
     const init = async (): Promise<void> => {
-        const bc = new BareClient();
         const se = Elements.select([
             { type: 'id', val: 'reset' },
             { type: 'id', val: 'nebula-input' },
@@ -90,10 +89,10 @@ function getCurrentYear() {
         const omnibox = Elements.exists<HTMLDivElement>(await se.next());
         const copyright = Elements.exists<HTMLDivElement>(await se.next());
         const iframe = Elements.exists<HTMLIFrameElement>(await se.next());
-        const prox = async (input: string, prox: "uv" | "sj") => {
+        const prox = async (input: string) => {
+            console.log('e')
             await Marketplace.ready();
             const mp = Marketplace.getInstances().next().value!;
-            const sw = SW.getInstances().next().value as SW; 
             iframe.classList.remove("hidden");
             const val = search(
                 input, 
@@ -101,49 +100,13 @@ function getCurrentYear() {
                 ? SearchEngines[defaultStore.getVal(SettingsVals.proxy.searchEngine)]
                 : SearchEngines.ddg
             );
-            const { serviceWorker } = await sw.getSWInfo();
-            mp.handlePlugins(serviceWorker);
-            switch(prox) {
-                case "uv": {
-                    iframe.src = `${__uv$config.prefix}${__uv$config.encodeUrl!(val)}`;
-                    break;
-                }
-                case "sj": {
-                    const { sj } = await sw.getSWInfo();
-                    iframe.src = sj.encodeUrl(val);
-                    break;
-                }
-            }
+            const frame = window.controller.createFrame(iframe);
+            frame.go(val);
         }
         input.addEventListener("keypress", async (event: any) => {
             if (event.key === "Enter") {
                 copyright.classList.add("hidden");
-                if (defaultStore.getVal(SettingsVals.proxy.proxy.key) === SettingsVals.proxy.proxy.available.automatic) {
-                    switch(SupportedSites[input.value]) {
-                        case "uv": {
-                            prox(input.value, "uv");
-                            break;
-                        }
-                        case "sj": {
-                            prox(input.value, "sj");
-                            break;
-                        }
-                        default: {
-                            prox(input.value, "uv");
-                        }
-                    }
-                }
-
-                switch(defaultStore.getVal("proxy") as "uv" | "sj") {
-                    case "uv": {
-                        prox(input.value, "uv");
-                        break;
-                    }
-                    case "sj": {
-                        prox(input.value, "sj");
-                        break;
-                    }
-                }
+                prox(input.value)
             }
         });
 
@@ -157,7 +120,7 @@ function getCurrentYear() {
 
             omnibox.classList.remove("hidden");
             input.classList.remove("rounded-b-2xl");
-            const data = await bc.fetch(`https://api.duckduckgo.com/ac?q=${encodeURIComponent(input.value)}&format=json`);
+            const data = await window.client.fetch(`https://api.duckduckgo.com/ac?q=${encodeURIComponent(input.value)}&format=json`);
             const res = await data.json();
             const fData = res.slice(0, 6); // Trim to only the first 6 results.
             if (fData.length <= 0) {

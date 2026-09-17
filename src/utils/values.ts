@@ -14,16 +14,6 @@ const WispServers: Record<string, string> = {
     "custom": defaultStore.getVal("customWispUrl")
 }
 
-const SupportedSites: Record<string, "uv" | "sj"> = {
-    "discord.gg": "sj",
-    "discord.com": "sj",
-    "spotify.com": "sj",
-    "spotify.link": "sj",
-    "youtube.com": "uv",
-    "youtu.be": "uv",
-    "google.com": "uv"
-};
-
 interface SettingsVals {
     i18n: {
         lang: "selectedLanguage",
@@ -33,16 +23,8 @@ interface SettingsVals {
         }
     },
     proxy: {
-        wispServer: string,
-        proxy: {
-            key: string,
-            available: {
-                uv: string;
-                sj: string;
-                automatic: string
-            }
-        },
-        searchEngine: string,
+      searchEngine: string,
+      wispServer: string,
         transport: {
             key: string,
             available: { 
@@ -79,17 +61,9 @@ const SettingsVals: SettingsVals = {
             jp: "jp"
         }
     },
-    proxy: {
-        wispServer: "wispServer",
-        proxy: { 
-            key: "proxy",
-            available: {
-                sj: "sj",
-                uv: "uv",
-                automatic: "automatic"
-            }
-        },
-        searchEngine: "searchEngine",
+  proxy: {
+      searchEngine: "searchEngine",
+      wispServer: "wispServer",
         transport: {
             key: "transport",
             available: {
@@ -116,4 +90,4 @@ const SettingsVals: SettingsVals = {
     }
 }
 
-export { SearchEngines, WispServers, SupportedSites, SettingsVals, type cloaks }
+export { SearchEngines, WispServers, SettingsVals, type cloaks }

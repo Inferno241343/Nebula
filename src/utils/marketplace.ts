@@ -1,6 +1,7 @@
 import { Elements, log } from "./index";
 import { StoreManager } from "./storage";
 import { SettingsVals } from "./values";
+import type { Frame } from "@mercuryworkshop/scramjet-controller";
 
 type PluginType = "page" | "serviceWorker";
 type MarketplacePluginType = "plugin-page" | "plugin-sw";
@@ -172,7 +173,7 @@ class Marketplace {
         this.#storage.setVal(SettingsVals.marketPlace.plugins, JSON.stringify(items));
     }
 
-    async handlePlugins(worker: ServiceWorkerRegistration) {
+    async handlePlugins(frame: Frame) {
         let { plugins } = await this.getPlugins();
 
         const pagePlugins: SWPagePlugin[] = [];

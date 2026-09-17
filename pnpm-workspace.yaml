@@ -1,8 +1,8 @@
-onlyBuiltDependencies:
-  - '@biomejs/biome'
-  - '@mercuryworkshop/scramjet'
-  - bufferutil
-  - esbuild
-  - sharp
-  - sqlite3
-  - utf-8-validate
+allowBuilds:
+  '@biomejs/biome': true
+  '@mercuryworkshop/scramjet@https://github.com/MercuryWorkshop/scramjet/releases/download/v1.1.0/mercuryworkshop-scramjet-1.1.0.tgz': true
+  bufferutil: true
+  esbuild: true
+  sharp: true
+  sqlite3: true
+  utf-8-validate: true

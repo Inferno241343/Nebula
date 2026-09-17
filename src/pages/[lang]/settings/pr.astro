@@ -23,22 +23,6 @@ import { MARKETPLACE_ENABLED } from "astro:env/client";
       <div
         class="w-full h-full flex flex-col items-center justify-center flex-wrap md:flex-row md:items-start md:justify-start gap-4"
       >
-        <SettingsCard
-          title="Proxy"
-          description="Choose the proxy/rewriter that fits your needs"
-          input={{ input: false }}
-          button={{ name: "Change", id: "setproxy" }}
-          select={{
-            select: true,
-            name: "proxy",
-            options: [
-              { name: "Automatic", value: "automatic", disabled: false },
-              { name: "Ultraviolet", value: "uv", disabled: false },
-              { name: "Scramjet (BETA)", value: "sj", disabled: false },
-            ],
-            }}
-            both={{enabled: false}}
-        />
         <!-- SettingsCard
           title="Open in"
           description="Choose how to open your sites"
@@ -179,12 +163,10 @@ import { MARKETPLACE_ENABLED } from "astro:env/client";
   import { defaultStore } from "@utils/storage";
   import { SettingsVals } from "@utils/values";
   import { Settings } from "@utils/settings";
-  import { setTransport, SW } from "@utils/serviceWorker";
+  import { SW } from "@utils/serviceWorker";
 
   const init = async (): Promise<AsyncGenerator> => {
       return Elements.select([
-          { type: 'id', val: 'setproxy' },
-          { type: 'id', val: 'proxy' },
           { type: 'id', val: 'setsearchengine' },
           { type: 'id', val: 'searchengine' },
           { type: 'id', val: 'setwispurl' },
@@ -193,16 +175,6 @@ import { MARKETPLACE_ENABLED } from "astro:env/client";
           { type: 'id', val: 'settransport' },
           { type: 'id', val: 'transport' },
       ]);
-  }
-
-  const handleProxy = async (vals: AsyncGenerator) => {
-      const button = Elements.exists<HTMLButtonElement>(await vals.next());
-      const selectEl = Elements.exists<HTMLSelectElement>(await vals.next());
-      selectEl.value = defaultStore.getVal(SettingsVals.proxy.proxy.key);
-      Elements.attachEvent(button, "click", () => {
-          Settings.proxy.change(selectEl.value as "uv" | "sj" | "automatic");
-          toast(".proxyMessage");
-      });
   }
 
   const handleSearchEngine = async (vals: AsyncGenerator) => {
@@ -216,15 +188,11 @@ import { MARKETPLACE_ENABLED } from "astro:env/client";
   }
 
   const handleWispServers = async (vals: AsyncGenerator) => {
-
       const handleCustom = async (c: HTMLInputElement, removeClass: boolean) => { 
           if (!removeClass) return c.classList.add("hidden");
-          const sw = SW.getInstances().next().value as SW;
-          const { bareMuxConn } = await sw.getSWInfo();
           c.classList.remove("hidden");
           if (c.value === "") return c.value = defaultStore.getVal("customWispUrl");
           defaultStore.setVal("customWispUrl", c.value);
-          await setTransport(bareMuxConn);
           toast(".wispUrlMessage");
       }
     
@@ -253,10 +221,9 @@ import { MARKETPLACE_ENABLED } from "astro:env/client";
       events: {
           "astro:page-load": async () => {
               const v = await init();
-              await handleProxy(v);
               await handleSearchEngine(v);
               await handleWispServers(v);
-              await  handleTransports(v);
+              await handleTransports(v);
           }
       },
       logging: false
