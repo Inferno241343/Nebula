@@ -14,7 +14,8 @@ import Layout from "@layouts/Layout.astro";
             { type: 'id', val: 'chango' }
         ]);
         const chango = Elements.exists<HTMLIFrameElement>(await el.next());
-        chango.src = `${__uv$config.prefix}${__uv$config.encodeUrl!("https://truffled.lol/g")}`
+        const frame = window.controller.createFrame(chango);
+        frame.go("https://truffled.lol/g")
     };
 
     new EventHandler({

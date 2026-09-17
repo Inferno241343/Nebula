@@ -64,10 +64,9 @@
 -   [Tailwind](https://tailwindcss.com/)
 -   [Svelte](https://svelte.dev/)
 -   [Fastify](https://fastify.dev)
--   [Ultraviolet](https://github.com/titaniumnetwork-dev/ultraviolet)
 -   [Scramjet](https://github.com/mercuryworkshop/scramjet)
--   [Epoxy](https://github.com/mercuryworkshop/epoxy-tls)
 -   [Libcurl.js](https://github.com/ading2210/libcurl.js)
+-   [Epoxy](https://github.com/mercuryworkshop/epoxy-tls)
 ---
 
 ## Catalog/Marketplace

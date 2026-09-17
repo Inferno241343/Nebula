@@ -31,12 +31,14 @@
     "@fastify/static": "^8.0.3",
     "@iconify-json/ph": "^1.2.2",
     "@mercuryworkshop/bare-mux": "^2.1.7",
-    "@mercuryworkshop/epoxy-transport": "^2.1.27",
-    "@mercuryworkshop/libcurl-transport": "^1.3.15",
-    "@mercuryworkshop/scramjet": "https://github.com/MercuryWorkshop/scramjet/releases/download/v1.1.0/mercuryworkshop-scramjet-1.1.0.tgz",
+    "@mercuryworkshop/epoxy-transport": "^3.0.1",
+    "@mercuryworkshop/libcurl-transport": "^2.0.5",
+    "@mercuryworkshop/proxy-transports": "^1.0.2",
+    "@mercuryworkshop/scramjet": "2.0.67-alpha.2",
+    "@mercuryworkshop/scramjet-controller": "^0.0.14",
+    "@mercuryworkshop/wisp-js": "^0.5.0",
     "@playform/compress": "^0.1.6",
     "@rubynetwork/corlink-fastify": "https://github.com/NebulaServices/corlink/releases/download/2.0.2/rubynetwork-corlink-fastify-2.0.2.tgz",
-    "@titaniumnetwork-dev/ultraviolet": "^3.2.10",
     "@types/node": "^22.10.2",
     "@types/sequelize": "^4.28.20",
     "astro": "^5.16.3",
@@ -55,8 +57,7 @@
     "svelte-french-toast": "^1.2.0",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.7.2",
-    "vite-plugin-static-copy": "^2.2.0",
-    "@mercuryworkshop/wisp-js": "^0.4.0"
+    "vite-plugin-static-copy": "^2.2.0"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
